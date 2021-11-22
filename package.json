@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@sendgrid/mail": "^7.6.0",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15",
+    "sequelize": "^6.9.0",
+    "sequelize-cli": "^6.3.0"
+  },
+  "name": "alkchallenge",
+  "version": "1.0.0",
+  "description": "Challenge NodeJs - Gabriel Pamich",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thadek"
+  },
+  "author": "Thadek",
+  "license": "ISC"
+}
