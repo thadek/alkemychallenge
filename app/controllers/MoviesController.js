@@ -13,7 +13,7 @@ module.exports = {
         if (!validation.error) {
             //Other validations
             const movCreationDate = Date.parse(req.body.creationDate)
-            //Characters processing magic hole         
+            //Characters processing        
             const validatedCharArray = await characterService.processArray(req.body.Characters)
             //Verify if movie exists
             const movieData = await Movie.findOne({
