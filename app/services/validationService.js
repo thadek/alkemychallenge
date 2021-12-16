@@ -51,7 +51,32 @@ validateMovie(movie){
     }else{
         return {error:false}
     }
+},
+
+validateUser(user){    
+    if(!user.name){
+        return {error:"User must have a name"}
+    }else if(!user.email){
+        return {error:"User must have a email."}
+    }else if(!user.password){
+        return {error:"User must have a password."}
+    }else{
+        return{error:false}
+    }
+},
+
+validateLogin(user){
+    if(!user.email){
+        return{error:"Email is a required field."}
+    }else if(!user.password){
+        return{error:"Password is a required field."}
+    }else{
+        return{ error:false}
+    }
 }
+
+
+
 
 }
 

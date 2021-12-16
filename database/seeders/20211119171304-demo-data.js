@@ -1,6 +1,7 @@
 'use strict';
 
-const { Movie, Character, Genre} = require('../../app/models/index')
+const { Movie, Character, Genre, Role, User} = require('../../app/models/index')
+const encryptionService = require('../../app/services/encryptionService')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -8,6 +9,16 @@ module.exports = {
   
 
     return Promise.all([
+
+      User.create({
+        name:"admin",
+        email:"admin@alkemy.org",
+        password:encryptionService.encryptPass('123456'),
+        Roles:[{name:"admin"}]
+      },{include:[Role]}),
+
+      Role.bulkCreate([{
+         name:"user"}]),
 
       Genre.bulkCreate([{
         imageURL:"https://i0.wp.com/danielle-adams.com/wp-content/uploads/2018/03/fantasy_world.jpg?fit=1140%2C500&ssl=1",

@@ -5,6 +5,7 @@ const router = express.Router();
 const AuthController = require('./controllers/AuthController');
 const MoviesController = require('./controllers/MoviesController');
 const CharacterController = require('./controllers/CharacterController');
+const RoleController = require('./controllers/RoleController')
 
 //Middleware
 const auth = require('./middlewares/auth');
@@ -38,5 +39,10 @@ router.post('/characters', auth, CharacterController.createCharacter)
 router.put('/characters',auth,CharacterController.updateCharacter)
 //DELETE
 router.delete('/characters',auth,CharacterController.deletebyId)
+
+
+/* Role Routes */ 
+//GET
+router.get('/roles',auth,RoleController.getRoles)
 
 module.exports = router;

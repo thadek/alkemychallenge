@@ -4,6 +4,7 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
   
     static associate(models) {
+      User.belongsToMany(models.Role,{through:'user_roles'})
     }
   };
   User.init({
@@ -39,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     timestamps:false,
-    modelName: 'user',
+    modelName: 'User',
   });
   return User;
 };
