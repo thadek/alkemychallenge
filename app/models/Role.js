@@ -10,8 +10,16 @@ module.exports = (sequelize, DataTypes) => {
   Role.init({
     name: {
      type:DataTypes.STRING,
-     unique:true,
-     allowNull:false
+     allowNull:false,
+     validate:{
+       isLowercase:{
+         msg:"Role name is only accepted in lowercase."
+       }
+     },
+     unique: {
+           args: 'name',
+           msg: 'The role already exists.'
+        }
     },
   }, {
     sequelize,

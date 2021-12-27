@@ -6,7 +6,7 @@ module.exports = {
 
     async createDatabase() {
         const connection = await mysql.createConnection({ host, port, user, password });
-        const res = connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`).then(() => "Database created.").catch(err => console.log(err));
+        const res = connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`).then(() => "Ok.").catch(err => console.log(err));
         return res;
     },
 

@@ -8,6 +8,9 @@ require('dotenv').config();
 // 2a - DB Create if DB_NAME is not present (Only in the case where all of other dotenv variables are present)
 if (!process.env.DB_NAME) {
     console.log("Creating Database with name alkemychallenge");
+}else{
+    console.log(`Attempting to create Database with name ${process.env.DB_NAME} if not exists.`);
+}
     db.createDatabase().then(created => {
         console.log(created);
         db.checkConnection()
@@ -25,21 +28,8 @@ if (!process.env.DB_NAME) {
         
 
     }).catch(err => console.log(err))
-} else {
-//2b - DB Connection Verification
-    db.checkConnection()
-            .then(connected => {
-                console.log(connected)
-                //Persist Models in DB
-                db.persistModels().then(persisted => {
-                    console.log(persisted)
-                    db.populateDatabase().then(() => {
-                        console.log('\x1b[32m%s\x1b[0m', "All ok? All ok. Finishing Execution.")
-                        process.exit();
-                    })
-                });
-            })
-}
+
+
 
 
 

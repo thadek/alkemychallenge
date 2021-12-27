@@ -1,5 +1,5 @@
 const Repository = require('./Repository')
-const { User } = require('../models/index');
+const { User, Role } = require('../models/index');
 
 class UserRepository extends Repository {
     constructor() {
@@ -7,46 +7,39 @@ class UserRepository extends Repository {
         this.model = User;
     }
 
-    async create(usr) {
-        try {
-            const returnedUser = await this.model.findOrCreate({
-                where: {
-                    email: usr.email
-                },
-                defaults: {
-                    name: usr.name,
-                    password: usr.password,
-                }
-            })
-
-            if (!returnedUser[1]) {
-                const error = { error: `The user with email ${usr.email} already exists.` }
-                return error;
-            } else {
-                return returnedUser[0]
-            }
-        } catch (err) {
-            if (err.name === "SequelizeValidationError") {
-                return {error: err.errors[0].message }
-            }else{
-                return {error: err}
-            }
-
-        }
-
-
-    }
-
     async findByEmail(mail) {
         return this.model.findOne({
             where: {
                 email: mail
-            }
+            },
+            include:{ model:Role,attributes:['name'], through:{attributes:[]}}
+        })
+    }
+   
+    async getAll(){
+        return this.model.findAll({
+            attributes:['id','name','email']    
+        })
+    }
+ 
+    async getRoles(userId){
+        return this.model.findOne({
+            where:{ id:userId},
+            attributes:['id'],
+            include:{model:Role,through:{attributes:[]},attributes:['name']}
         })
     }
 
-    
+    async hasRole(userId, roleName) {
+        const hasRol = await this.model.findOne({
+            where: { id: userId }, attributes:[],
+            include: { model: Role, through:{ attributes:[]},
+                       where: { name: roleName } 
+                }})
+        return hasRol ? true : false;  
+}
 
+    
 }
 
 module.exports = UserRepository;

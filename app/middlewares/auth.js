@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
             if (err) {
                 res.status(500).json({ error: "Error decoding token.", errorData: err })
             } else {
-               req.user = decoded;
+               req.user = decoded.user;
                next();
             }
         })
