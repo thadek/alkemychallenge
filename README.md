@@ -12,12 +12,15 @@ API para explorar el mundo de Disney. Challenge Alkemy NodeJs 2021 - Gabriel Pam
 - Express
 - SendGrid
 - JSON Web Token
+- mysql2
+- Mocha, Chai
+- Swagger.
 
 
 
 ## Instalación
 
-Luego de clonar el repositorio, es importante realizar una serie de pasos para un correcto funcionamiento de la app.
+Luego de clonar el repositorio, es importante realizar una serie de pasos para un correcto funcionamiento de la app. (Posterior a utilizar npm install para descargar dependencias).
 
 ### 1) Crear archivo de variables de entorno (.env) con el siguiente contenido completo.
 
