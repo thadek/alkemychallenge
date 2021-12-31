@@ -3,10 +3,15 @@
 API para explorar el mundo de Disney. Challenge Alkemy NodeJs 2021 - Gabriel Pamich.
 
 ## Documentación
-[Documentación en Postman](https://documenter.getpostman.com/view/15080099/UVJWrfnM) // Documentación en swagger en proceso. 
+[Documentación en Postman](https://documenter.getpostman.com/view/15080099/UVJWrfnM)  
+### Documentación en Swagger
+Iniciar la app y ir a http://localhost:9116/docs 
 
 ## Testing
-En proceso.
+Ejecutar para realizar los tests a los endpoints.
+```bash
+npm run test
+```
 
 ## Dependencias
 - Sequelize, SequelizeCLI
