@@ -2,7 +2,8 @@ const RoleService = require('../services/roleService');
 
 module.exports = {
 
-getRoles: async (req,res) => res.json(await RoleService.getRoles()),
+getRoles: async (req,res) => { 
+    res.json(await RoleService.getAllRoles())},
 
 createRole: (req,res) => {
     RoleService.createRole(req.body)

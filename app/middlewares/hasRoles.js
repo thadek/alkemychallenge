@@ -1,8 +1,8 @@
 const userRepository = require('../repositories/UserRepository');
 const uRepo = new userRepository();
-const hasRole = (rolName) =>{
-    return (req,res,next)=>{
-        uRepo.hasRole(req.user.id,rolName).then(response=>{
+const hasRoles = (...rolNames) =>{
+    return (req,res,next)=>{   
+        uRepo.hasRoles(req.user.id,rolNames).then(response=>{
             if(response){
               next();
             }else{
@@ -12,4 +12,4 @@ const hasRole = (rolName) =>{
 }
 }
 
-module.exports = hasRole;
+module.exports = hasRoles;

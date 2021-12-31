@@ -20,7 +20,7 @@ const createUser = async (usr) => {
   //User created -> asign role, welcome Mail.
   await roleService.setDefaultRole(repoResponse.id)
   ms.sendWelcomeMail(repoResponse, passWithoutEncrypt)
-  return responseHandler.sendResponse(200, { msg: `Welcome ${repoResponse.name}! Registration is complete. We send you a welcome mail!.` })
+  return responseHandler.sendResponse(201, { msg: `Welcome ${repoResponse.name}! Registration is complete. We send you a welcome mail!.` })
 }
 
 const loginUser = async (usr) => {
@@ -36,7 +36,11 @@ const loginUser = async (usr) => {
   return responseHandler.sendResponse(200, { msg: `Welcome ${repoResponse.name}.`, token: token })
 }
 
-const getUsers = async() =>{ const res = await repo.getAll(); return responseHandler.sendResponse(200,res)}
+const getUsers = async(params) =>{ 
+  const res = await repo.getAll(params); 
+  if(!res.length) return responseHandler.sendResponse(404,"Email not found in database.")
+  return responseHandler.sendResponse(200,res)
+}
 
 const getUser = async(id) => {
   const res = repo.findById(id);

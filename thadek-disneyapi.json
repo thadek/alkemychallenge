@@ -1,0 +1,1409 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "NodeJs Alkemy Challenge - DisneyApi",
+    "description": "Api for explore disney characters and movies. Gabriel Pamich.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:9116/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Auth - Login endpoints"
+    },
+    {
+      "name": "Characters",
+      "description": "Character CRUD"
+    },
+    {
+      "name": "Movies",
+      "description": "Movies CRUD"
+    },
+    {
+      "name": "Roles",
+      "description": "Roles CRUD"
+    },
+    {
+      "name": "User",
+      "description": "Users settings"
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "login success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Incorrect Login"
+          },
+          "404": {
+            "description": "Inexistent User"
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Register an user to get api access.",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Creation complete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid fields"
+          }
+        }
+      }
+    },
+    "/movies": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "description": "Get movies list with 3 attributes: id, imageURL and title.",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "description": "optional filter list by movie name/title",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "genre",
+            "in": "query",
+            "description": "optional filter by genreID",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "optional filter ASC/DESC",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MovieRequest"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Movies"
+        ],
+        "description": "Change a existent movie. Only accepts existent characters ID.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success updated movie message."
+          },
+          "400": {
+            "description": "Validation Error -> Any Movie's field is invalid or CharacterService detected an error with CharacterArray."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "Character or Movie ids doesn't exists in DB."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Movies"
+        ],
+        "description": "Attempt to create a new movie. IMPORTANT: ACCEPTS in Character Array IDs or new characters object to create without id.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MovieCreationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Movie object created with ID.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation Error -> Any Movie's field is invalid or CharacterService detected an error with CharacterArray."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "409": {
+            "description": "The movie exists on database."
+          },
+          "500": {
+            "description": "Unexpected error creating movie."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "tags": [
+          "Movies"
+        ],
+        "description": "Returns all object data of specific movie",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Movie Object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "404": {
+            "description": "Inexistent movie"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Succesfully deleted message."
+          },
+          "400": {
+            "description": "Invalid ID"
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "Inexistent movie"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/characters": {
+      "get": {
+        "tags": [
+          "Characters"
+        ],
+        "description": "Returns the character list with id, name and imageURL.",
+        "operationId": "ViewCharacters",
+        "parameters": [
+          {
+            "name": "movies",
+            "in": "query",
+            "description": "pass an optional movieId to get characters related with that movie.",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "age",
+            "in": "query",
+            "description": "filter for character's age",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "filter by character's name",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CharacterInfoObject"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Characters"
+        ],
+        "description": "Update a existent character",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Character"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Character updated message."
+          },
+          "400": {
+            "description": "Validation error. Any field is missing or incorrect."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "500": {
+            "description": "Unexpected Error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Characters"
+        ],
+        "description": "Attempt to create a new Character",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CharacterCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Character created with ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Character"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error. Any field is missing or incorrect."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "409": {
+            "description": "Duplicated entry. Character already exists."
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/characters/{id}": {
+      "get": {
+        "tags": [
+          "Characters"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Character Complete with Movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CharacterComplete"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "404": {
+            "description": "Character id not found"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Characters"
+        ],
+        "description": "Delete a character",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Character deleted correctly."
+          },
+          "400": {
+            "description": "invalid ID"
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "Inexistent character."
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Show list of roles",
+        "responses": {
+          "200": {
+            "description": "Roles list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Update a existent Role",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Role"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Role updated correctly."
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Attempt to create a new Role",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Role created with ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "500": {
+            "description": "Unexpected error."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/roles/{id}": {
+      "delete": {
+        "tags": [
+          "Roles"
+        ],
+        "description": "Attemps to delete a Role",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Role deleted correctly."
+          },
+          "400": {
+            "description": "Validation error."
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "Inexistent Role ID."
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Show list of users, can be filtered by email.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users list or user matching with email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserInfoObject"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "Email doesn't exists on database."
+          },
+          "500": {
+            "description": "Unexpected error."
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    },
+    "/users/{id}/roles": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Show a list of roles of an specific User",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User Role list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Role"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "404": {
+            "description": "UserID not found"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "Update user roles. Only accepts RoleID numbers array.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User Roles updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Token missing in header."
+          },
+          "403": {
+            "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+          },
+          "500": {
+            "description": "Unexpected error"
+          }
+        },
+        "security": [
+          {
+            "BearerToken": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "MovieRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 2
+          },
+          "title": {
+            "type": "string",
+            "example": "The little mermaid"
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://imgur.com/littlemermaid.jpg"
+          }
+        }
+      },
+      "MovieCreationRequest": {
+        "required": [
+          "Characters",
+          "GenreId",
+          "creationDate",
+          "imageURL",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "The little mermaid"
+          },
+          "GenreId": {
+            "type": "number",
+            "example": 2
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "1989-05-15"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://imgur.com/asd.com"
+          },
+          "Characters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CharacterCreate"
+            }
+          }
+        },
+        "xml": {
+          "name": "Movie"
+        }
+      },
+      "MovieUpdateRequest": {
+        "required": [
+          "Characters",
+          "GenreId",
+          "creationDate",
+          "imageURL",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "The little mermaid"
+          },
+          "GenreId": {
+            "type": "number",
+            "example": 2
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "1989-05-15"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://imgur.com/asd.com"
+          },
+          "Characters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CharacterId"
+            }
+          }
+        },
+        "xml": {
+          "name": "Movie"
+        }
+      },
+      "Movie": {
+        "required": [
+          "Characters",
+          "GenreId",
+          "creationDate",
+          "imageURL",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "The little mermaid"
+          },
+          "GenreId": {
+            "type": "number",
+            "example": 2
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "1989-05-15"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://imgur.com/asd.com"
+          },
+          "Characters": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CharacterCreate"
+            }
+          }
+        },
+        "xml": {
+          "name": "Movie"
+        }
+      },
+      "MovieWithoutCharacters": {
+        "required": [
+          "Characters",
+          "GenreId",
+          "creationDate",
+          "imageURL",
+          "rating",
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "The little mermaid"
+          },
+          "GenreId": {
+            "type": "number",
+            "example": 2
+          },
+          "creationDate": {
+            "type": "string",
+            "example": "1989-05-15"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://imgur.com/asd.com"
+          }
+        },
+        "xml": {
+          "name": "Movie"
+        }
+      },
+      "CharacterInfoObject": {
+        "required": [
+          "id",
+          "imageURL",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "number",
+            "example": "1"
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://upload.wikimedia.org/wikipedia/en/e/e3/Ursula%28TheLittleMermaid%29character.png"
+          },
+          "name": {
+            "type": "string",
+            "example": "Ursula"
+          }
+        }
+      },
+      "CharacterCreate": {
+        "required": [
+          "age",
+          "history",
+          "imageURL",
+          "name",
+          "weight"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Ariel"
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://upload.wikimedia.org/wikipedia/en/e/e3/Ursula%28TheLittleMermaid%29character.png"
+          },
+          "age": {
+            "type": "number",
+            "example": 16
+          },
+          "weight": {
+            "type": "number",
+            "example": 40
+          },
+          "history": {
+            "type": "string",
+            "example": "16-year-old mermaid princess of Atlantica who is fascinated with humans, especially Prince Eric"
+          }
+        },
+        "xml": {
+          "name": "CharacterCreate"
+        }
+      },
+      "Character": {
+        "required": [
+          "age",
+          "history",
+          "imageURL",
+          "name",
+          "weight"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Ariel"
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://upload.wikimedia.org/wikipedia/en/e/e3/Ursula%28TheLittleMermaid%29character.png"
+          },
+          "age": {
+            "type": "number",
+            "example": 16
+          },
+          "weight": {
+            "type": "number",
+            "example": 40
+          },
+          "history": {
+            "type": "string",
+            "example": "16-year-old mermaid princess of Atlantica who is fascinated with humans, especially Prince Eric"
+          }
+        },
+        "xml": {
+          "name": "Character"
+        }
+      },
+      "CharacterComplete": {
+        "required": [
+          "age",
+          "history",
+          "imageURL",
+          "name",
+          "weight"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "Ariel"
+          },
+          "imageURL": {
+            "type": "string",
+            "example": "https://upload.wikimedia.org/wikipedia/en/e/e3/Ursula%28TheLittleMermaid%29character.png"
+          },
+          "age": {
+            "type": "number",
+            "example": 16
+          },
+          "weight": {
+            "type": "number",
+            "example": 40
+          },
+          "history": {
+            "type": "string",
+            "example": "16-year-old mermaid princess of Atlantica who is fascinated with humans, especially Prince Eric"
+          },
+          "Movies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MovieWithoutCharacters"
+            }
+          }
+        },
+        "xml": {
+          "name": "CharacterComplete"
+        }
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "RoleCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "admin"
+          }
+        }
+      },
+      "UserInfoObject": {
+        "required": [
+          "email",
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "<uuid>"
+          },
+          "name": {
+            "type": "string",
+            "example": "Example"
+          },
+          "email": {
+            "type": "string",
+            "example": "admin@alkemy.org"
+          }
+        },
+        "xml": {
+          "name": "User"
+        }
+      },
+      "Login": {
+        "required": [
+          "email",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "example@alkchall.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "xml": {
+          "name": "Login"
+        }
+      },
+      "CharacterId": {
+        "title": "Character",
+        "required": [
+          "id"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "example": {
+          "id": 3
+        }
+      },
+      "AddUser": {
+        "required": [
+          "email",
+          "name",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Example"
+          },
+          "email": {
+            "type": "string",
+            "example": "example@alkchall.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "xml": {
+          "name": "AddUser"
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string",
+            "example": "Welcome <user>, we send you a welcome mail."
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string",
+            "example": "Welcome <user>"
+          },
+          "token": {
+            "type": "string",
+            "example": "<token>"
+          }
+        },
+        "xml": {
+          "name": "main"
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "response": {
+            "type": "string",
+            "example": "User roles updated."
+          },
+          "User": {
+            "type": "object",
+            "example": {
+              "id": "<UUID>",
+              "Roles": [
+                {
+                  "name": "admin"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "401ErrorMessage": {
+        "description": "Token missing in header."
+      },
+      "403ErrorMessage": {
+        "description": "Insufficient Permissions to perform that action. (Probably needs admin role)"
+      }
+    },
+    "securitySchemes": {
+      "BearerToken": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

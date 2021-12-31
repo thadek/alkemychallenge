@@ -1,5 +1,6 @@
 const Repository = require('./Repository')
 const { User, Role } = require('../models/index');
+const { Op } = require('sequelize');
 
 class UserRepository extends Repository {
     constructor() {
@@ -16,8 +17,10 @@ class UserRepository extends Repository {
         })
     }
    
-    async getAll(){
-        return this.model.findAll({
+    async getAll(params){
+        let query = {};
+        if(params.email) query ={ email:params.email };
+        return this.model.findAll({where:query,
             attributes:['id','name','email']    
         })
     }
@@ -30,14 +33,18 @@ class UserRepository extends Repository {
         })
     }
 
-    async hasRole(userId, roleName) {
-        const hasRol = await this.model.findOne({
+    async hasRoles(userId, roleNames) {
+   
+        const hasRoles = await this.model.findOne({
             where: { id: userId }, attributes:[],
             include: { model: Role, through:{ attributes:[]},
-                       where: { name: roleName } 
+                       where: { name: {[Op.or]:roleNames} } 
                 }})
-        return hasRol ? true : false;  
+                
+        return hasRoles ? true : false;  
 }
+
+
 
     
 }

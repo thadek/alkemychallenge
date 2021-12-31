@@ -1,32 +1,25 @@
 const userService = require('../services/userService')
+const roleService = require('../services/roleService')
 module.exports = {
 
-    login: (req, res) => {
-        userService.loginUser(req.body)
-            .then(serviceResponse => {
-                res.status(serviceResponse.status).json(serviceResponse.response)
-            }).catch(err => { res.status(500).json({ error: err }) });
-    },
-
-    register: (req, res) => {
-        userService.createUser(req.body)
-            .then(serviceResponse => {
-                res.status(serviceResponse.status).json(serviceResponse.response)
-            }).catch(error => {
-                res.status(500).json({ error: error });})
-    },
-
-    getUsers: async(req,res) =>{
-        userService.getUsers().then(serviceResponse=>{
+    getUsers:(req,res) =>{
+        userService.getUsers(req.query).then(serviceResponse=>{
             res.status(serviceResponse.status).json(serviceResponse.response)
         }).catch(error => {
             res.status(500).json({ error: error });})
     },
 
-    getUserRoles: async(req,res) =>{
+    getUserRoles:(req,res) =>{
        userService.getUserRoles(req.params.id).then(serviceResponse=>{
         res.status(serviceResponse.status).json(serviceResponse.response)
     })
+    },
+
+    setUserRoles:(req,res) =>{
+       roleService.setRoles(req.user.id,req.params.id,req.body.Roles).then(serviceResponse=>{
+        res.status(serviceResponse.status).json(serviceResponse.response)
+    })
     }
+
 
 }

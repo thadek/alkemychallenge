@@ -11,18 +11,18 @@ const createMovie = async (movie) => {
     const validation = vs.validateMovie(movie);
     if (validation.error) return responseHandler.sendResponse(400, validation.error)
     const validatedCharArray = await cs.processArray(movie.Characters)
-    if (validatedCharArray.error) return responseHandler.sendResponse(400, { msg: "Movie not created. CharacterService has detected a problem with CharactersArray.", CharacterServiceResponse: validatedCharArray })
+    if (validatedCharArray.error) return responseHandler.sendResponse(400, { msg: "Movie not created. CharacterService has detected a problem with CharactersArray.", CharacterServiceResponse: validatedCharArray.error })
     const repoResponse = await rp.findOrCreate(movie).catch(error => { return { error: sequelizeErrorParser(error) } });
     if (repoResponse.error) return responseHandler.sendResponse(500, repoResponse.error)
     if (!repoResponse[1]) {
         if (validatedCharArray.newCharacters.added.length) { return responseHandler.sendResponse(500, { msg: `The movie with title ${movie.title} already exists in database with id: ${repoResponse[0].id}, however the characterArray processing has been created new Characters.`,CharacterServiceResponse: validatedCharArray.newCharacters }) }
-        return responseHandler.sendResponse(500, { msg: `The movie with title ${movie.title} already exists in database with id: ${repoResponse[0].id}.` })
+        return responseHandler.sendResponse(409, { msg: `The movie with title ${movie.title} already exists in database with id: ${repoResponse[0].id}.` })
     }
     const movieCreated = repoResponse[0];
     if (validatedCharArray.existentVerified) await movieCreated.addCharacters(validatedCharArray.existentVerified)
     if(validatedCharArray.newCharacters.added.length) await movieCreated.addCharacters(validatedCharArray.newCharacters.added)
     const movReturned = await rp.findById(movieCreated.id)
-    return responseHandler.sendResponse(200, movReturned)
+    return responseHandler.sendResponse(201, movReturned)
     } catch (err) { return responseHandler.sendResponse(500, err) }
     
 }

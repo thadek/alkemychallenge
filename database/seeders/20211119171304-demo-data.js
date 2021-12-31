@@ -1,7 +1,6 @@
 'use strict';
+const { Movie, Character, Genre} = require('../../app/models/index')
 
-const { Movie, Character, Genre, Role, User} = require('../../app/models/index')
-const encryptionService = require('../../app/services/encryptionService')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
@@ -10,16 +9,7 @@ module.exports = {
 
     return Promise.all([
 
-      User.create({
-        name:"admin",
-        email:"admin@alkemy.org",
-        password:encryptionService.encryptPass('123456'),
-        Roles:[{name:"admin"}]
-      },{include:[Role]}),
-
-      Role.bulkCreate([{
-         name:"user"}]),
-
+    
       Genre.bulkCreate([{
         imageURL:"https://i0.wp.com/danielle-adams.com/wp-content/uploads/2018/03/fantasy_world.jpg?fit=1140%2C500&ssl=1",
         name:"Fantasy"
@@ -62,7 +52,39 @@ module.exports = {
       },
       {
         include:[Character]
-      })
+      }),
+
+      Movie.create({
+        imageURL: "https://upload.wikimedia.org/wikipedia/en/c/c0/The_Little_Mermaid_%28Official_1989_Film_Poster%29.png",
+        title: "The little mermaid",
+        creationDate: Date.parse("Nov 17, 1989"),
+        GenreId:1,
+        rating: 5,
+        Characters: [
+          {
+            imageURL: "https://upload.wikimedia.org/wikipedia/en/7/77/Ariel_disney.png",
+            name: "Ariel",
+            age: 16,
+            weight: 40,
+            history: "Ariel is the seventh-born daughter of King Triton and Queen Athena of an underwater kingdom of merfolk called Atlantica.She is often rebellious, and in the first film, she longs to be a part of the human world"
+          },{
+            imageURL: "https://static.wikia.nocookie.net/disney/images/6/67/George_Banks.jpg/revision/latest/scale-to-width-down/260?cb=20140123203814&path-prefix=es",
+            name: "Prince Eric",
+            age: 18,
+            weight: 64,
+            history: "Eric is a human prince rescued by Ariel when he almost drowns in a storm at sea."
+          },{
+            imageURL: "https://upload.wikimedia.org/wikipedia/en/e/e3/Ursula%28TheLittleMermaid%29character.png",
+            name: "Ursula",
+            age: 106,
+            weight: 80,
+            history: "Ursula is a villainous sea witch who offers a mermaid princess named Ariel a temporary opportunity to become human so that she may earn the love of Prince Eric within three days"
+          }
+        ]
+        },
+        {
+          include:[Character]
+        })
 
     ]);
     

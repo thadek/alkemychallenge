@@ -5,9 +5,14 @@ const responseHandler = require('./responseHandler');
 const errorService = require('./errorService');
 
     const createCharacter = async(character) => {
+        try{
         const response = await createCharacters([character]);
-        if (response.error) return responseHandler.sendResponse(500, response.error)
-        if (response.added) return responseHandler.sendResponse(200, response.added[0])
+        if(response.error.duplicatedEntryError) return responseHandler.sendResponse(409,response.error)
+        if (response.error) return responseHandler.sendResponse(400, response.error)
+        if (response.added) return responseHandler.sendResponse(201, response.added[0])
+        }catch(err){
+            return responseHandler.sendResponse(500,err)
+        }
     }
 
     const getCharacter = async (id) => {
@@ -96,7 +101,7 @@ const errorService = require('./errorService');
     const deleteById = async (id) => {
         if (isNaN(Number.parseInt(id))) return responseHandler.sendResponse(400, `Invalid ID.`)
         const res = await rp.deleteById(id)
-        if (res == 0) return responseHandler.sendResponse(400, `Can't find character with ID:${id}`)
+        if (res == 0) return responseHandler.sendResponse(404, `Can't find character with ID:${id}`)
         if (res.error) return responseHandler.sendResponse(500, res.error)
         return responseHandler.sendResponse(200, { response: `Character with ID:${id} deleted.` })
     }

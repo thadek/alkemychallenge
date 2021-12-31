@@ -89,6 +89,8 @@ module.exports = {
             return { error: "Admin role is a core role. Impossible create/modify/delete role with that name." }
         } else if (role.name.toLowerCase() == 'user') {
             return { error: "User role is a core role. Impossible create/modify/delete role with that name." }
+        }else if( role.id === 1 || role.id === 2){
+            return { error: "Ids 1-2 are reserved for core roles User-Admin. Impossible create/modify/delete role with that ids." }
         } else {
             return { error: false }
         }
